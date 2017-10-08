@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="gnome-shell-sprint-escaux">
+    <schema id="be.adaxisoft.sprint-escaux" path="/be/adaxisoft/sprint-escaux/">
+        <key type="s" name="url">
+            <default><![CDATA['http://localhost:8080/mantis/']]></default>
+            <summary>Mantis Url</summary>
+        </key>
+        <key type="s" name="username">
+            <default><![CDATA['administrator']]></default>
+            <summary>Mantis Username</summary>
+        </key>
+        <key type="s" name="password">
+            <default><![CDATA['0Rx5Co01hz55f01SeAKRDrqlS3QJjvU5']]></default>
+            <summary>Mantis API Token</summary>
+        </key>
+        <key type="s" name="handler">
+            <default><![CDATA['gbo']]></default>
+            <summary>Handler</summary>
+        </key>
+    </schema>
+</schemalist>

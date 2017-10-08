@@ -1,5 +1,5 @@
 {
-	"settings-schema": "org.gnome.shell.extensions.sprint-escaux",
+	"settings-schema": "be.adaxisoft.sprint-escaux",
 	"shell-version": ["3.22"],
 	"uuid": "sprint-escaux@adaxi",
 	"name": "Sprint Number",

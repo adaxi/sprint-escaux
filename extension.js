@@ -73,7 +73,6 @@ const SprintMenu = new Lang.Class({
         this.tickets = tickets;
 
         let sprintNumber = currentSprint(new Date("2009-04-20"), 14);
-        
         this.parent(0.0, sprintNumber + "");
 
         let hbox = new St.BoxLayout({ style_class: 'panel-status-sprint-box' });
@@ -90,7 +89,9 @@ const SprintMenu = new Lang.Class({
 
     _loadData: function () {
         let settings = Settings.getSettings();
-        let handler = settings.get_string(HANDLER_KEY);
+        // let handler = settings.get_string(HANDLER_KEY);
+        let handler = 'gbo'
+        let sprintNumber = currentSprint(new Date("2009-04-20"), 14);
         this.tickets.list(sprintNumber, handler, Lang.bind(this, function (stories) {
             stories.map(Lang.bind(this, function (story) {
                 this.menu.removeAll();
@@ -100,7 +101,7 @@ const SprintMenu = new Lang.Class({
     },
 
     _refresh: function () {
-        this._loadData(this._loadData);
+        this._loadData();
         this._removeTimeout();
         this._timeout = Mainloop.timeout_add_seconds(10, Lang.bind(this, this._refresh));
         return true;
@@ -118,7 +119,6 @@ const SprintMenu = new Lang.Class({
         this.menu.removeAll();
         this.parent();
     }
-    
 
 });
 
@@ -130,9 +130,9 @@ function init() {
 
 function enable() {
     let settings = Settings.getSettings();
-    let mantisUrl = settings.get_string(MANTIS_URL_KEY);
-    let username = settings.get_string(MANTIS_USERNAME_KEY);
-    let password = settings.get_string(MANTIS_PASSWORD_KEY);
+    let mantisUrl = settings.get_string(MANTIS_URL_KEY) || 'http://localhost:8080/mantis/';
+    let username = settings.get_string(MANTIS_USERNAME_KEY) || 'administrator';
+    let password = settings.get_string(MANTIS_PASSWORD_KEY) || '0Rx5Co01hz55f01SeAKRDrqlS3QJjvU5';
     let mantisUa = new MantisUa(mantisUrl, {
         username: username,
         password: password,

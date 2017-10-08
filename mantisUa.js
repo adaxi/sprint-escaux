@@ -27,7 +27,7 @@ const MantisUa = new Lang.Class({
 
         message.set_request('text/xml; charset=utf-8', Soup.MemoryUse.COPY, body)
 
-        this.httpSession.queue_message(message, Lang.bind(this, handleResponse));
+        this.httpSession.queue_message(message, handleResponse);
 
         function handleResponse(httpSession, message) {
             if (message.status_code !== 200) {
@@ -57,8 +57,8 @@ const Tickets = new Lang.Class({
         '<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://futureware.biz/mantisconnect" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">' +
         '  <SOAP-ENV:Body>' +
         '    <ns1:mc_filter_search_issues>' +
-        '      <username xsi:type="xsd:string">administrator</username>' +
-        '      <password xsi:type="xsd:string">qlTxPh9jA6pMX9MFA-LZBlH6YA-Owy6t</password>' +
+        '      <username xsi:type="xsd:string">' + this.mantisUa.username + '</username>' +
+        '      <password xsi:type="xsd:string">' + this.mantisUa.password + '</password>' +
         '      <filter xsi:type="ns1:FilterSearchData">' +
         '        <custom_fields SOAP-ENC:arrayType="ns1:FilterCustomField[2]" xsi:type="ns1:FilterCustomFieldArray">' +
         '          <item xsi:type="ns1:FilterCustomField">' +
@@ -85,7 +85,7 @@ const Tickets = new Lang.Class({
         '  </SOAP-ENV:Body>' +
         '</SOAP-ENV:Envelope>';
 
-        let query = '/api/soap/mantisconnect.php';
+        let query = 'api/soap/mantisconnect.php';
         this.mantisUa.request(query, request, responseCallback);
 
         function responseCallback(response, httpCode) {
