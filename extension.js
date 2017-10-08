@@ -1,8 +1,8 @@
 const Clutter = imports.gi.Clutter;
-const St = imports.gi.St;
 const Lang = imports.lang;
+const Mainloop = imports.mainloop;
 const Soup = imports.gi.Soup;
-
+const St = imports.gi.St;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -10,6 +10,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 const MantisUa = Me.imports.mantisUa.MantisUa;
 const Tickets = Me.imports.mantisUa.Tickets;
+const Settings = Me.imports.utils;
 
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
@@ -17,6 +18,11 @@ const PopupMenu = imports.ui.popupMenu;
 
 const Clipboard = St.Clipboard.get_default();
 const CLIPBOARD_TYPE = St.ClipboardType.CLIPBOARD;
+
+const MANTIS_URL_KEY = 'url';
+const MANTIS_USERNAME_KEY = 'username';
+const MANTIS_PASSWORD_KEY = 'password';
+const HANDLER_KEY = 'handler';
 
 function sprintNumber(initialDate, date, length) {
     let initialTimestamp = initialDate.getTime() / 1000;
@@ -79,31 +85,40 @@ const SprintMenu = new Lang.Class({
         hbox.add_child(PopupMenu.arrowIcon(St.Side.BOTTOM));
         this.actor.add_actor(hbox);
 
+        this._refresh();
+    },
 
-        this.tickets.list(sprintNumber, 'gbo', Lang.bind(this, function (stories) {
+    _loadData: function () {
+        let settings = Settings.getSettings();
+        let handler = settings.get_string(HANDLER_KEY);
+        this.tickets.list(sprintNumber, handler, Lang.bind(this, function (stories) {
             stories.map(Lang.bind(this, function (story) {
+                this.menu.removeAll();
                 this.menu.addMenuItem(new SprintMenuItem(story));
             }))
         }))
-        
-        // menu.addMenuItem(new SprintMenuItem({ name : "10000" }));
-        /*
-        httpSession.queue_message(request, function(httpSession, message) {
-            if (message.status_code !== 200) {
-                return;
-            }
-            var storiesJSON = request.response_body.data;
-            var stories = JSON.parse(storiesJSON);
-            for (let story of stories) {
-                menu.addMenuItem(new SprintMenuItem({ name : story.id }));
-                menu.addMenuItem(new SprintMenuItem({ name : story.id }));
-            }
-        });*/
+    },
+
+    _refresh: function () {
+        this._loadData(this._loadData);
+        this._removeTimeout();
+        this._timeout = Mainloop.timeout_add_seconds(10, Lang.bind(this, this._refresh));
+        return true;
+    },
+
+    _removeTimeout: function () {
+        if (this._timeout) {
+          Mainloop.source_remove(this._timeout);
+          this._timeout = null;
+        }
     },
 
     destroy: function () {
+        this._removeTimeout();
+        this.menu.removeAll();
         this.parent();
     }
+    
 
 });
 
@@ -114,9 +129,13 @@ function init() {
 }
 
 function enable() {
-    let mantisUa = new MantisUa('http://localhost:8080/mantis/', {
-        username: '',
-        password: '',
+    let settings = Settings.getSettings();
+    let mantisUrl = settings.get_string(MANTIS_URL_KEY);
+    let username = settings.get_string(MANTIS_USERNAME_KEY);
+    let password = settings.get_string(MANTIS_PASSWORD_KEY);
+    let mantisUa = new MantisUa(mantisUrl, {
+        username: username,
+        password: password,
     });
     let tickets = new Tickets(mantisUa);
     let sprintMenu = new SprintMenu(tickets);

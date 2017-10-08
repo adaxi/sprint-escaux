@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="gnome-shell-sprint-escaux">
+    <schema id="org.gnome.shell.extensions.sprint-escaux" path="/org/gnome/shell/extensions/sprint-escaux/">
+        <key type="as" name="url">
+            <default><![CDATA[['https://intranet.escaux.com/bugtracker/']]]></default>
+            <summary>Mantis Url</summary>
+        </key>
+        <key type="as" name="username">
+            <default><![CDATA[['']]]></default>
+            <summary>Mantis Username</summary>
+        </key>
+        <key type="as" name="password">
+            <default><![CDATA[['']]]></default>
+            <summary>Mantis API Token</summary>
+        </key>
+        <key type="as" name="handler">
+            <default><![CDATA[['gbo']]]></default>
+            <summary>Handler</summary>
+        </key>
+    </schema>
+</schemalist>
