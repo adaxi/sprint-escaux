@@ -3,6 +3,7 @@ const St = imports.gi.St;
 const Lang = imports.lang;
 const Soup = imports.gi.Soup;
 
+
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
@@ -10,10 +11,12 @@ const Utils = Me.imports.utils;
 const MantisUa = Me.imports.mantisUa.MantisUa;
 const Tickets = Me.imports.mantisUa.Tickets;
 
-const Gtk = imports.gi.Gtk;
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
+
+const Clipboard = St.Clipboard.get_default();
+const CLIPBOARD_TYPE = St.ClipboardType.CLIPBOARD;
 
 function sprintNumber(initialDate, date, length) {
     let initialTimestamp = initialDate.getTime() / 1000;
@@ -35,12 +38,12 @@ const SprintMenuItem = new Lang.Class({
     Name: 'SprintMenuItem.SprintMenuItem',
     Extends: PopupMenu.PopupBaseMenuItem,
 
-    _init: function (info) {
+    _init: function (story) {
         this.parent();
-        this._info = info;
+        this.story = story;
 
         this._label = new St.Label({
-            text: info.name,
+            text: 'M' + story.id + ' ' + story.summary + (story.handler ? ' (' + story.handler  + ')' : ''),
         });
 
         this.actor.add_child(this._label);
@@ -51,7 +54,7 @@ const SprintMenuItem = new Lang.Class({
     },
 
     activate: function (event) {
-        Gtk.show_uri(null, 'https://google.com/', global.get_current_time());
+        Clipboard.set_text(CLIPBOARD_TYPE, 'git clone -m "M' + this.story.id + ' ' + this.story.summary + '"');
         this.parent(event);
     },
 });
@@ -77,13 +80,14 @@ const SprintMenu = new Lang.Class({
         this.actor.add_actor(hbox);
 
 
-        var menu = this.menu;
-
-        this.tickets.request(sprintNumber, 'gbo', Lang.bind(this, function (stories) {
-            menu.addMenuItem(new SprintMenuItem({ name : stories.length }));
+        this.tickets.list(sprintNumber, 'gbo', Lang.bind(this, function (stories) {
+            stories.map(Lang.bind(this, function (story) {
+                this.menu.addMenuItem(new SprintMenuItem(story));
+            }))
         }))
         
-        menu.addMenuItem(new SprintMenuItem({ name : "10000" }));
+        // menu.addMenuItem(new SprintMenuItem({ name : "10000" }));
+        /*
         httpSession.queue_message(request, function(httpSession, message) {
             if (message.status_code !== 200) {
                 return;
@@ -94,7 +98,7 @@ const SprintMenu = new Lang.Class({
                 menu.addMenuItem(new SprintMenuItem({ name : story.id }));
                 menu.addMenuItem(new SprintMenuItem({ name : story.id }));
             }
-        });
+        });*/
     },
 
     destroy: function () {

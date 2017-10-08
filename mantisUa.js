@@ -29,7 +29,7 @@ const MantisUa = new Lang.Class({
 
         this.httpSession.queue_message(message, Lang.bind(this, handleResponse));
 
-        function handleResponse(_httpSession, message) {
+        function handleResponse(httpSession, message) {
             if (message.status_code !== 200) {
                 throw new Error('Query failed with `' + message.status_code + '` error code.');
             }
@@ -48,7 +48,7 @@ const Tickets = new Lang.Class({
     Name: 'Tickets',
     
     _init: function (mantisUa) {
-        this.mantisUa;
+        this.mantisUa = mantisUa;
     },
 
     list: function (sprint, handler /* a.k.a 'assigned to' */, listCallback) {
@@ -102,18 +102,18 @@ const Tickets = new Lang.Class({
                 throw new Error('Failed to extract items from response', err);
             }
 
-            let stories = items.
-                map(function (item) {
+            let stories = items.children
+                .map(function (item) {
                     return {
                         id: idField(item),
                         summary: summaryField(item),
                         handler: handlerField(item)
                     }
                 })
-                filter(function (item) {
+                .filter(function (item) {
                     return item.handler === handler;
                 })
-                sort(function (a, b) {
+                .sort(function (a, b) {
                     return a.id > b.id ? 1 : -1;
                 })
 
